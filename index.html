@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Milestone Email Decision Tree</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f9fa; color: #1a1a1a; padding: 24px 28px; }
+
+  .header { margin-bottom: 22px; }
+  .header h1 { font-size: 21px; font-weight: 700; color: #111; }
+  .header p { font-size: 13px; color: #888; margin-top: 5px; }
+
+  .summary-bar { display: flex; gap: 20px; background: white; border: 1.5px solid #e5e5e5; border-radius: 10px; padding: 14px 20px; margin-bottom: 20px; flex-wrap: wrap; }
+  .summary-stat .num { font-size: 20px; font-weight: 700; color: #111; }
+  .summary-stat .lbl { font-size: 11px; color: #888; margin-top: 2px; }
+  .summary-divider { width: 1px; background: #f0f0f0; }
+
+  /* version legend */
+  .legend { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  .legend-label { font-size: 12px; color: #888; margin-right: 4px; }
+  .legend-chip { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; user-select: none; }
+  .legend-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .chip-current { background: #fafafa; border-color: #e5e5e5; color: #555; }
+  .chip-current .dot { background: #aaa; }
+  .chip-v11 { background: #fff7ed; border-color: #fed7aa; color: #92400e; }
+  .chip-v11 .dot { background: #f59e0b; }
+  .chip-v2 { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+  .chip-v2 .dot { background: #3b82f6; }
+  .legend-chip.inactive { opacity: 0.4; }
+  .legend-sep { font-size: 12px; color: #ccc; }
+
+  .stage-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: #999; margin: 22px 0 10px; }
+
+  .milestone-card { background: white; border: 1.5px solid #e5e5e5; border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: box-shadow 0.15s; }
+  .milestone-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+
+  .card-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; }
+  .milestone-icon { font-size: 20px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 9px; background: #f4f4f5; flex-shrink: 0; }
+  .milestone-meta { flex: 1; min-width: 0; }
+  .milestone-name { font-size: 14px; font-weight: 600; color: #111; }
+  .milestone-trigger { font-size: 12px; color: #999; margin-top: 2px; }
+  .badge-row { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .ctr-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+  .ctr-good { background: #dcfce7; color: #15803d; }
+  .ctr-bad { background: #fef2f2; color: #b91c1c; }
+  .stage-chip { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  .stage-activation { background: #dbeafe; color: #1d4ed8; }
+  .stage-ignition { background: #fef3c7; color: #b45309; }
+  .stage-grind { background: #ede9fe; color: #6d28d9; }
+  .stage-final { background: #dcfce7; color: #15803d; }
+  .chevron { font-size: 11px; color: #ccc; transition: transform 0.2s; margin-left: 4px; flex-shrink: 0; }
+  .chevron.open { transform: rotate(180deg); }
+
+  .card-body { display: none; border-top: 1px solid #f0f0f0; }
+  .card-body.open { display: block; }
+
+  /* Three panel grid */
+  .panels { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+  .panel { padding: 16px 18px; }
+  .panel + .panel { border-left: 1px solid #f0f0f0; }
+  .panel.panel-v11 { background: #fffbf0; }
+  .panel.panel-v2 { background: #f0f7ff; }
+
+  .panel-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 13px; display: flex; align-items: center; gap: 5px; }
+  .panel-label .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .label-current { color: #777; }
+  .label-current .dot { background: #aaa; }
+  .label-v11 { color: #92400e; }
+  .label-v11 .dot { background: #f59e0b; }
+  .label-v2 { color: #1e40af; }
+  .label-v2 .dot { background: #3b82f6; }
+
+  .field { margin-bottom: 11px; }
+  .field-label { font-size: 10px; font-weight: 700; color: #ccc; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .field-value { font-size: 13px; color: #222; line-height: 1.5; }
+  .field-value.missing { color: #f87171; font-style: italic; }
+  .field-value.unchanged { color: #888; font-style: italic; }
+  .field-value.new { color: #15803d; }
+  .field-value.v2new { color: #1d4ed8; }
+  .field-value.keepit { color: #666; }
+
+  .cta-pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 6px; margin-top: 3px; }
+  .cta-pill.none { background: #fff7ed; color: #c2410c; }
+  .cta-pill.v11-cta { background: #fef3c7; color: #92400e; }
+  .cta-pill.v2-cta { background: #dbeafe; color: #1e40af; }
+  .cta-pill.existing { background: #dcfce7; color: #15803d; }
+  .cta-note { font-size: 12px; color: #888; margin-top: 4px; line-height: 1.4; }
+
+  .ab-tag { display: inline-block; font-size: 10px; font-weight: 700; background: #fef3c7; color: #b45309; padding: 2px 7px; border-radius: 3px; vertical-align: middle; margin-left: 5px; }
+  .check-tag { display: inline-block; font-size: 10px; font-weight: 700; background: #fef2f2; color: #b91c1c; padding: 2px 7px; border-radius: 3px; }
+
+  .stats-bar { display: flex; gap: 20px; padding: 10px 18px; background: #fafafa; border-top: 1px solid #f0f0f0; flex-wrap: wrap; }
+  .stat { font-size: 12px; color: #888; }
+  .stat strong { color: #444; }
+
+  @media (max-width: 700px) {
+    .panels { grid-template-columns: 1fr; }
+    .panel + .panel { border-left: none; border-top: 1px solid #f0f0f0; }
+    .badge-row .stage-chip { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎯 Milestone Email Decision Tree</h1>
+  <p>8 active campaigns &nbsp;·&nbsp; All sending automatically &nbsp;·&nbsp; Updated 12 May 2026</p>
+</div>
+
+<div class="summary-bar">
+  <div class="summary-stat"><div class="num">8</div><div class="lbl">Active campaigns</div></div>
+  <div class="summary-divider"></div>
+  <div class="summary-stat"><div class="num" style="color:#b91c1c">7</div><div class="lbl">Missing CTA</div></div>
+  <div class="summary-divider"></div>
+  <div class="summary-stat"><div class="num" style="color:#b91c1c">8</div><div class="lbl">Missing preheader</div></div>
+  <div class="summary-divider"></div>
+  <div class="summary-stat"><div class="num" style="color:#b91c1c">8</div><div class="lbl">Missing from name</div></div>
+  <div class="summary-divider"></div>
+  <div class="summary-stat"><div class="num" style="color:#15803d">15.7%</div><div class="lbl">Best CTR (self-donation)</div></div>
+  <div class="summary-divider"></div>
+  <div class="summary-stat"><div class="num" style="color:#b91c1c">~0.9%</div><div class="lbl">Avg CTR (other 7)</div></div>
+</div>
+
+<div class="legend">
+  <span class="legend-label">Show:</span>
+  <span class="legend-chip chip-current" onclick="togglePanel('current', this)"><span class="dot"></span>Current</span>
+  <span class="legend-sep">+</span>
+  <span class="legend-chip chip-v11" onclick="togglePanel('v11', this)"><span class="dot"></span>V1.1 Quick Fix</span>
+  <span class="legend-sep">+</span>
+  <span class="legend-chip chip-v2" onclick="togglePanel('v2', this)"><span class="dot"></span>V2 Rewrite</span>
+</div>
+
+<!-- STAGE 03 -->
+<div class="stage-label">Stage 03 — Activation (Days 0–3)</div>
+
+<div class="milestone-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="milestone-icon">👟</div>
+    <div class="milestone-meta">
+      <div class="milestone-name">First Rep — Self-donation</div>
+      <div class="milestone-trigger">Trigger: first donation received (incl. self-donation) &nbsp;·&nbsp; CIO ID: 48</div>
+    </div>
+    <div class="badge-row">
+      <span class="stage-chip stage-activation">Activation</span>
+      <span class="ctr-badge ctr-good">15.7% CTR ✓</span>
+    </div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div class="panels">
+      <div class="panel panel-current">
+        <div class="panel-label label-current"><span class="dot"></span>Current V1</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value">You've Fueled the First Step</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill existing">✓ Text link to page</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value">You've just unlocked momentum with a self-donation... Now it's time to build on that spark. Share your page.</div></div>
+      </div>
+      <div class="panel panel-v11">
+        <div class="panel-label label-v11"><span class="dot"></span>V1.1 Quick Fix</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value unchanged">Unchanged</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value new">The smartest move in fundraising? Believing in yourself first.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v11-cta">Upgrade to button</div><div class="cta-note">"Share your fundraising page"</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value unchanged">Unchanged</div></div>
+      </div>
+      <div class="panel panel-v2">
+        <div class="panel-label label-v2"><span class="dot"></span>V2 Rewrite</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value keepit">You've Fueled the First Step <span style="color:#aaa;font-size:11px">(keep)</span></div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value v2new">The smartest move in fundraising? Believing in yourself first.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value v2new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v2-cta">Button + social caption</div><div class="cta-note">"Share your fundraising page" + pre-written caption template below</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value v2new">Tightened. Ends with pre-written social caption block.</div></div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat">Sends: <strong>~9k</strong></div>
+      <div class="stat">V1.1 scope: <strong>Preheader + from name + button upgrade</strong></div>
+      <div class="stat">V2 scope: <strong>Polish + caption template</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- STAGE 04 -->
+<div class="stage-label">Stage 04 — Ignition (Weeks 1–2)</div>
+
+<div class="milestone-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="milestone-icon">💪</div>
+    <div class="milestone-meta">
+      <div class="milestone-name">Squad Strength — 5 Donors</div>
+      <div class="milestone-trigger">Trigger: 5th donation received &nbsp;·&nbsp; CIO ID: 38</div>
+    </div>
+    <div class="badge-row">
+      <span class="stage-chip stage-ignition">Ignition</span>
+      <span class="ctr-badge ctr-bad">~0.9% CTR</span>
+    </div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div class="panels">
+      <div class="panel panel-current">
+        <div class="panel-label label-current"><span class="dot"></span>Current V1</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value">You've Got a Team Behind You</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill none">No CTA</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value">There's strength in numbers... You now have 5 people who believe in your cause. You're building momentum.</div></div>
+      </div>
+      <div class="panel panel-v11">
+        <div class="panel-label label-v11"><span class="dot"></span>V1.1 Quick Fix</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value unchanged">Unchanged</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value new">Your first team is in. Here's what to do next.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v11-cta">New button added</div><div class="cta-note">"Share this milestone" linking to fundraising page</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value unchanged">Unchanged</div></div>
+      </div>
+      <div class="panel panel-v2">
+        <div class="panel-label label-v2"><span class="dot"></span>V2 Rewrite</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value v2new">5 people believe in this. Let's make it 10.</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value v2new">Your first team is in. Here's what to do next.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value v2new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v2-cta">Button + caption</div><div class="cta-note">"Share this milestone" + pre-written caption: "5 people are backing my cause. If you want to be next: [link]"</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value v2new">Reframed: you've built a team, now activate them toward getting the next 5.</div></div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat">V1.1 scope: <strong>Preheader + from name + button</strong></div>
+      <div class="stat">V2 scope: <strong>New subject + body + button + caption</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="milestone-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="milestone-icon">⚡</div>
+    <div class="milestone-meta">
+      <div class="milestone-name">Pace Setter — 25% of Goal</div>
+      <div class="milestone-trigger">Trigger: 25% fundraising target reached &nbsp;·&nbsp; CIO ID: 47</div>
+    </div>
+    <div class="badge-row">
+      <span class="stage-chip stage-ignition">Ignition</span>
+      <span class="ctr-badge ctr-bad">~0.9% CTR</span>
+    </div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div class="panels">
+      <div class="panel panel-current">
+        <div class="panel-label label-current"><span class="dot"></span>Current V1</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value">You're Gaining Ground</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill none">No CTA</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value">You're 1/4 of the way toward your goal. Take a moment to celebrate your wins. Keep setting the pace...</div></div>
+      </div>
+      <div class="panel panel-v11">
+        <div class="panel-label label-v11"><span class="dot"></span>V1.1 Quick Fix <span class="ab-tag">A/B TEST</span></div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value unchanged">Unchanged</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value new">25% done. Here's the one thing to do right now.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v11-cta">New button added</div><div class="cta-note">"Share your progress" linking to fundraising page</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value unchanged">Unchanged</div></div>
+      </div>
+      <div class="panel panel-v2">
+        <div class="panel-label label-v2"><span class="dot"></span>V2 Rewrite</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value v2new">You're a quarter of the way there, [first name]</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value v2new">25% done. Here's the one thing to do right now.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value v2new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v2-cta">Button + caption</div><div class="cta-note">"Share your progress" + pre-written update: "I'm 25% to my goal for [cause]. Here's my page: [link]"</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value v2new">Tightened. Concrete single ask: share, not celebrate.</div></div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat">Sends: <strong>9,514 (largest milestone)</strong></div>
+      <div class="stat">V1.1: <strong>A/B test — current (control) vs V1.1 (test). Metric: CTR</strong></div>
+      <div class="stat">Min per variant: <strong>200 sends</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- STAGE 05 -->
+<div class="stage-label">Stage 05 — The Grind (Weeks 3–8)</div>
+
+<div class="milestone-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="milestone-icon">🤝</div>
+    <div class="milestone-meta">
+      <div class="milestone-name">Team Effort — 10 Donors</div>
+      <div class="milestone-trigger">Trigger: 10th donation received &nbsp;·&nbsp; CIO ID: 37</div>
+    </div>
+    <div class="badge-row">
+      <span class="stage-chip stage-grind">The Grind</span>
+      <span class="ctr-badge ctr-bad">~0.9% CTR</span>
+    </div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div class="panels">
+      <div class="panel panel-current">
+        <div class="panel-label label-current"><span class="dot"></span>Current V1</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value">Team Effort: 10 donors reached</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill none">No CTA</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value">You've inspired 10 people to believe in your cause. 10 people believe in you. Now show them what you're about.</div></div>
+      </div>
+      <div class="panel panel-v11">
+        <div class="panel-label label-v11"><span class="dot"></span>V1.1 Quick Fix</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value unchanged">Unchanged</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value new">Your donors showed up. Here's how to show up for them.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v11-cta">New button added</div><div class="cta-note">"Thank your donors" linking to fundraising page</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value unchanged">Unchanged</div></div>
+      </div>
+      <div class="panel panel-v2">
+        <div class="panel-label label-v2"><span class="dot"></span>V2 Rewrite</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value v2new">10 people are with you. Time to say thanks.</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value v2new">Your donors showed up. Here's how to show up for them.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value v2new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v2-cta">Button + public thank-you</div><div class="cta-note">"Thank your donors" + pre-written thank-you post to share on socials</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value v2new">Pivots to gratitude loop. 10 donors = a community. Celebrate them publicly.</div></div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat">V1.1 scope: <strong>Preheader + from name + button</strong></div>
+      <div class="stat">V2 scope: <strong>New subject + body + gratitude loop CTA</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="milestone-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="milestone-icon">⚖️</div>
+    <div class="milestone-meta">
+      <div class="milestone-name">Halfway Line — 50% of Goal</div>
+      <div class="milestone-trigger">Trigger: 50% fundraising target reached &nbsp;·&nbsp; CIO ID: 39</div>
+    </div>
+    <div class="badge-row">
+      <span class="stage-chip stage-grind">The Grind</span>
+      <span class="ctr-badge ctr-bad">~0.9% CTR</span>
+    </div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div class="panels">
+      <div class="panel panel-current">
+        <div class="panel-label label-current"><span class="dot"></span>Current V1</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value">Halfway to Big Impact</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill none">No CTA</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value">Impact Racing adds another dimension of determination to HYROX. You've stepped up to the challenge... halfway to your goal. Keep going.</div></div>
+      </div>
+      <div class="panel panel-v11">
+        <div class="panel-label label-v11"><span class="dot"></span>V1.1 Quick Fix</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value unchanged">Unchanged</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value new">You've raised half your goal. Here's the move that gets you to the finish.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v11-cta">New button added</div><div class="cta-note">"Send to someone now" linking to fundraising page</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value unchanged">Unchanged</div></div>
+      </div>
+      <div class="panel panel-v2">
+        <div class="panel-label label-v2"><span class="dot"></span>V2 Rewrite</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value v2new">Halfway there. One person away from the final push.</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value v2new">You've raised half your goal. Here's the move that gets you to the finish.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value v2new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v2-cta">Button + copy-paste message</div><div class="cta-note">"Send to someone now" + "I'm halfway to my goal. One donation gets me past it: [link]"</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value v2new">Cuts generic HYROX opener. Specific ask: recruit one person. Makes the gap feel small.</div></div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat">V1.1 scope: <strong>Preheader + from name + button</strong></div>
+      <div class="stat">Note: <strong>Leaderboard angle worth testing here too (per audit)</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="milestone-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="milestone-icon">🔥</div>
+    <div class="milestone-meta">
+      <div class="milestone-name">Good Grit — 75% of Goal</div>
+      <div class="milestone-trigger">Trigger: 75% fundraising target reached &nbsp;·&nbsp; CIO ID: 42</div>
+    </div>
+    <div class="badge-row">
+      <span class="stage-chip stage-grind">The Grind</span>
+      <span class="ctr-badge ctr-bad">~0.9% CTR</span>
+    </div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div class="panels">
+      <div class="panel panel-current">
+        <div class="panel-label label-current"><span class="dot"></span>Current V1</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value">Endurance is Everything</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill none">No CTA</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value">You're lunging forward and proving endurance. At 75% of your target, we know you'll pull it off. Finish strong.</div></div>
+      </div>
+      <div class="panel panel-v11">
+        <div class="panel-label label-v11"><span class="dot"></span>V1.1 Quick Fix</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value unchanged">Unchanged</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value new">75% done. The finish line just got real.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v11-cta">New button added</div><div class="cta-note">"Share your stretch goal" linking to fundraising page</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value unchanged">Unchanged</div></div>
+      </div>
+      <div class="panel panel-v2">
+        <div class="panel-label label-v2"><span class="dot"></span>V2 Rewrite</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value v2new">You're $[X] from funding [specific outcome]</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value v2new">75% done. The finish line just got real.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value v2new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v2-cta">Button + share message</div><div class="cta-note">"Share your stretch goal" + "I'm $X away from 100%. One more donor gets me there: [link]"</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value v2new">Makes remaining gap feel specific and small. "$X funds [named impact]." Urgency without panic.</div></div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat">V1.1 scope: <strong>Preheader + from name + button</strong></div>
+      <div class="stat">V2 scope: <strong>New subject (dynamic $) + body + stretch goal CTA</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- STAGE 06 -->
+<div class="stage-label">Stage 06 — Final Push (Weeks 9–12)</div>
+
+<div class="milestone-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="milestone-icon">🏁</div>
+    <div class="milestone-meta">
+      <div class="milestone-name">Finish Line — 100% of Goal</div>
+      <div class="milestone-trigger">Trigger: 100% fundraising target reached &nbsp;·&nbsp; CIO ID: 41</div>
+    </div>
+    <div class="badge-row">
+      <span class="stage-chip stage-final">Final Push</span>
+      <span class="ctr-badge ctr-bad">~0.9% CTR</span>
+    </div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div class="panels">
+      <div class="panel panel-current">
+        <div class="panel-label label-current"><span class="dot"></span>Current V1</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value">✨ You Made It! ✨</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill none">No CTA (mentions stretch goal in text, no button)</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value">You paced yourself. You beat burnout. You made it to the finish line. Now celebrate and thank your supporters. Got more in you?...</div></div>
+      </div>
+      <div class="panel panel-v11">
+        <div class="panel-label label-v11"><span class="dot"></span>V1.1 Quick Fix</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value unchanged">Unchanged</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value new">Goal reached. Here's what the best fundraisers do next.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v11-cta">New button added</div><div class="cta-note">"Set a stretch goal" linking to fundraising page</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value unchanged">Unchanged</div></div>
+      </div>
+      <div class="panel panel-v2">
+        <div class="panel-label label-v2"><span class="dot"></span>V2 Rewrite</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value v2new">You did it. Now let's go bigger. 🏁</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value v2new">Goal reached. Here's what the best fundraisers do next.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value v2new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v2-cta">Two buttons</div><div class="cta-note">Button 1: "Post your finish on Instagram" + caption. Button 2: "Set a stretch goal" linking to target update.</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value v2new">Keeps celebration energy. Two clear paths: share the win or push further.</div></div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat">V1.1 scope: <strong>Preheader + from name + stretch goal button</strong></div>
+      <div class="stat">V2 scope: <strong>New subject + body + two CTA buttons + Instagram caption</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="milestone-card">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="milestone-icon">🥳</div>
+    <div class="milestone-meta">
+      <div class="milestone-name">Peak Ambition — 150% of Goal</div>
+      <div class="milestone-trigger">Trigger: 150% fundraising target reached &nbsp;·&nbsp; CIO ID: 40</div>
+    </div>
+    <div class="badge-row">
+      <span class="stage-chip stage-final">Final Push</span>
+      <span class="ctr-badge ctr-bad">~0.9% CTR</span>
+    </div>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="card-body">
+    <div class="panels">
+      <div class="panel panel-current">
+        <div class="panel-label label-current"><span class="dot"></span>Current V1</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value">You've Shown Peak Ambition 🥳</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value missing">Not set</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill none">No CTA</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value">What's better than a goal? Beating your goal. ✔️ 👏🏽👏🏽👏🏽👏🏽👏🏽👏🏽 <span class="check-tag">CHECK BODY — may be incomplete in CIO</span></div></div>
+      </div>
+      <div class="panel panel-v11">
+        <div class="panel-label label-v11"><span class="dot"></span>V1.1 Quick Fix</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value unchanged">Unchanged</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value new">Most people stop at 100. You kept going.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v11-cta">New button added</div><div class="cta-note">"Share your story" linking to fundraising page. Fix body first if incomplete.</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value" style="color:#c2410c">Check + fix in CIO before V1.1 is applied</div></div>
+      </div>
+      <div class="panel panel-v2">
+        <div class="panel-label label-v2"><span class="dot"></span>V2 Rewrite</div>
+        <div class="field"><div class="field-label">Subject</div><div class="field-value v2new">150%. You actually did that. 🥳</div></div>
+        <div class="field"><div class="field-label">Preheader</div><div class="field-value v2new">Most people stop at 100. You kept going.</div></div>
+        <div class="field"><div class="field-label">From name</div><div class="field-value v2new">Race for Impact</div></div>
+        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v2-cta">Button + story template</div><div class="cta-note">"Tell your story" + pre-written post describing their impact and race</div></div>
+        <div class="field"><div class="field-label">Body</div><div class="field-value v2new">Complete body rewrite + "tell your story" moment. Biggest achievers, biggest content opportunity.</div></div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat">V1.1 blocker: <strong>Check 150% body in CIO first before any changes</strong></div>
+      <div class="stat">V2 scope: <strong>New subject + complete body + story CTA</strong></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const visible = { current: true, v11: true, v2: true };
+
+function togglePanel(type, chip) {
+  visible[type] = !visible[type];
+  chip.classList.toggle('inactive', !visible[type]);
+  applyVisibility();
+}
+
+function applyVisibility() {
+  document.querySelectorAll('.card-body.open').forEach(body => applyToBody(body));
+}
+
+function applyToBody(body) {
+  ['current','v11','v2'].forEach(type => {
+    const panels = body.querySelectorAll('.panel-' + type);
+    panels.forEach(p => { p.style.display = visible[type] ? '' : 'none'; });
+  });
+  // reflow grid columns based on visible count
+  const count = Object.values(visible).filter(Boolean).length;
+  body.querySelectorAll('.panels').forEach(g => {
+    g.style.gridTemplateColumns = Array(count).fill('1fr').join(' ');
+  });
+}
+
+function toggleCard(header) {
+  const card = header.parentElement;
+  const body = card.querySelector('.card-body');
+  const chevron = header.querySelector('.chevron');
+  const isOpen = body.classList.contains('open');
+
+  document.querySelectorAll('.card-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.chevron').forEach(c => c.classList.remove('open'));
+
+  if (!isOpen) {
+    body.classList.add('open');
+    chevron.classList.add('open');
+    applyToBody(body);
+    setTimeout(() => body.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  }
+}
+
+// open first card on load
+document.querySelector('.card-header').click();
+</script>
+</body>
+</html>
