@@ -116,6 +116,17 @@
   .body-v1 { font-size: 11px; color: #444; line-height: 1.5; background: #f5f5f5; border-radius: 5px; padding: 8px 10px; margin-top: 3px; }
   .body-unchanged { font-size: 11px; color: #999; line-height: 1.5; background: #fafafa; border: 1px dashed #e0e0e0; border-radius: 5px; padding: 8px 10px; margin-top: 3px; font-style: italic; }
   .unchanged-badge { font-size: 9px; font-weight: 700; background: #e5e5e5; color: #888; padding: 1px 5px; border-radius: 3px; margin-right: 5px; text-transform: uppercase; font-style: normal; display: inline-block; vertical-align: middle; }
+  .v3-gate-tag { font-size: 9px; font-weight: 700; background: #ede9fe; color: #6d28d9; padding: 2px 6px; border-radius: 3px; margin-left: 5px; font-style: normal; }
+  .v3-inproduct-tag { font-size: 9px; font-weight: 700; background: #fef3c7; color: #b45309; padding: 2px 6px; border-radius: 3px; margin-left: 5px; font-style: normal; }
+  .v3-gate-banner { background: white; border: 1.5px solid #ddd6fe; border-radius: 10px; padding: 14px 18px; margin-bottom: 16px; }
+  .v3-gate-banner-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6d28d9; margin-bottom: 10px; }
+  .v3-gate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .v3-gate-col h4 { font-size: 11px; font-weight: 700; color: #6d28d9; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .v3-gate-col li { font-size: 12px; color: #444; line-height: 1.6; list-style: none; padding-left: 0; }
+  .v3-gate-col li::before { content: "·"; margin-right: 5px; color: #8b5cf6; }
+  .v3-hub-link { font-size: 12px; color: #6d28d9; text-decoration: none; font-weight: 500; }
+  .v3-hub-link:hover { text-decoration: underline; }
+  .inproduct-box { background: rgba(245,158,11,0.07); border: 1px solid #fde68a; border-radius: 6px; padding: 8px 10px; margin-top: 4px; font-size: 11px; color: #92400e; line-height: 1.5; }
 
   .followup-box { background: rgba(139,92,246,0.07); border: 1px solid #ddd6fe; border-radius: 6px; padding: 8px 10px; margin-top: 4px; font-size: 11px; color: #6d28d9; line-height: 1.4; }
   .followup-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #8b5cf6; margin-bottom: 3px; }
@@ -187,6 +198,34 @@
   </div>
 </div>
 
+<div class="v3-gate-banner">
+  <div class="v3-gate-banner-title">V3 Gate System — canonical doc: <a class="v3-hub-link" href="https://high-impact-athletes.github.io/marketing-hub/" target="_blank">Marketing Hub → Milestones tab ↗</a></div>
+  <div class="v3-gate-grid">
+    <div class="v3-gate-col">
+      <h4>4 Email Gates (CIO) — each a 4-email sequence</h4>
+      <ul>
+        <li>Gate 1: Power Start — Activate (new, no current CIO equivalent)</li>
+        <li>Gate 2: First Rep — First donation incl. self-donate</li>
+        <li>Gate 3: Halfway Line — 50% of goal</li>
+        <li>Gate 4: Finish Line — 100% of goal</li>
+      </ul>
+      <div style="font-size:11px;color:#888;margin-top:6px;">Each gate: The How → The Carrot → The Proof → The Push → Reward email. Exit on action.</div>
+    </div>
+    <div class="v3-gate-col">
+      <h4>7 In-product milestones (no CIO email)</h4>
+      <ul>
+        <li>Self-donation — badge + Get Ahead guide</li>
+        <li>5 Donors — "Your First 5" card + partner perk</li>
+        <li>25% — impact dashboard + progress card</li>
+        <li>10 Donors — donor thank-you e-cards + race tracker</li>
+        <li>75% — "75% and counting" card + PureSport pack</li>
+        <li>90% — ROXFIT warm-up + race tracker reminder</li>
+        <li>Stretch goals — outcome unlocks + leaderboard</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <div class="legend">
   <span class="legend-label">Show:</span>
   <span class="legend-chip chip-current" onclick="togglePanel('current', this)"><span class="dot"></span>Current V1</span>
@@ -245,14 +284,18 @@
         <div class="field"><div class="field-label">Follow-up</div><div class="field-value unchanged">None</div></div>
       </div>
       <div class="panel panel-v3">
-        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision</div>
-        <div class="field"><div class="field-label">Subject</div><div class="field-value new3">Personalised + dynamic</div></div>
-        <div class="field"><div class="field-label">Preheader</div><div class="field-value new3">Adapts based on profile</div></div>
-        <div class="field"><div class="field-label">From name</div><div class="field-value unchanged">Race for Impact</div></div>
-        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v3-cta">Gate unlock logic</div></div>
-        <div class="field"><div class="field-label">Follow-up</div>
-          <div class="followup-box"><div class="followup-label">If no share in X days</div>"The first donation is in — have you shared it yet?" Completion gates next milestone content track.</div>
+        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision <span class="v3-gate-tag">GATE 2</span></div>
+        <div class="field"><div class="field-label">Gate</div><div class="field-value new3">First Rep — first £ on page (incl. self-donate)</div></div>
+        <div class="field"><div class="field-label">4-email sequence</div>
+          <div class="followup-box">
+            <div class="followup-label">Day 0: The How</div>Self-donate prompt. Copy-paste templates. Normalise the first move.<br><br>
+            <div class="followup-label">Day 2: The Carrot</div>Win RFI x PUMA merch bundle. Variable reward draw.<br><br>
+            <div class="followup-label">Day 4: The Proof</div>"Avg racer gets first donation in 3 days." Athlete awkwardness masterclass.<br><br>
+            <div class="followup-label">Day 6: The Push</div>"Your impact card is waiting. One donation unlocks it." Loss aversion.
+          </div>
         </div>
+        <div class="field"><div class="field-label">Reward email</div><div class="field-value new3">Impact card + Get Ahead unlocks + shareable. Donor gets impact card with receipt.</div></div>
+        <div class="field"><div class="field-label">Exit</div><div class="field-value new3">Action completed → reward → Gate 3</div></div>
       </div>
     </div>
     <div class="stats-bar">
@@ -311,14 +354,12 @@
         <div class="field"><div class="field-label">Follow-up</div><div class="field-value unchanged">None</div></div>
       </div>
       <div class="panel panel-v3">
-        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision</div>
-        <div class="field"><div class="field-label">Subject</div><div class="field-value new3">Personalised + dynamic</div></div>
-        <div class="field"><div class="field-label">Preheader</div><div class="field-value new3">Adapts based on fundraising pace</div></div>
-        <div class="field"><div class="field-label">From name</div><div class="field-value unchanged">Race for Impact</div></div>
-        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v3-cta">Gate + "My First 5" card</div></div>
-        <div class="field"><div class="field-label">Follow-up</div>
-          <div class="followup-box"><div class="followup-label">If no share in X days</div>"Still building your team? Here's a simpler way to share." Completion unlocks 10-donor track.</div>
+        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision <span class="v3-inproduct-tag">IN-PRODUCT</span></div>
+        <div class="field"><div class="field-label">In V3</div><div class="field-value new3">No CIO email. Platform notification only when 5 donors hit.</div></div>
+        <div class="field"><div class="field-label">Platform rewards</div>
+          <div class="inproduct-box">"Your First 5" card with donor names + impact<br>Partner perk unlock (Howbout / PureSport / AirBnB)<br>"My First 5" share card for socials<br>Strava integration prompt</div>
         </div>
+        <div class="field"><div class="field-label">Why</div><div class="field-value new3">Keeps journey rich without email fatigue. Platform handles delivery.</div></div>
       </div>
     </div>
     <div class="stats-bar">
@@ -374,14 +415,12 @@
         <div class="field"><div class="field-label">Follow-up</div><div class="field-value unchanged">None</div></div>
       </div>
       <div class="panel panel-v3">
-        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision</div>
-        <div class="field"><div class="field-label">Subject</div><div class="field-value new3">Personalised + dynamic</div></div>
-        <div class="field"><div class="field-label">Preheader</div><div class="field-value new3">Adapts to time-to-race + pace</div></div>
-        <div class="field"><div class="field-label">From name</div><div class="field-value unchanged">Race for Impact</div></div>
-        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v3-cta">Gate + 25% progress card</div></div>
-        <div class="field"><div class="field-label">Follow-up</div>
-          <div class="followup-box"><div class="followup-label">If no click in X days</div>"Still at 25%? Here's a simpler way to share." Time-bound variant fires if race &lt;4 weeks. Completion gates 50% track.</div>
+        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision <span class="v3-inproduct-tag">IN-PRODUCT</span></div>
+        <div class="field"><div class="field-label">In V3</div><div class="field-value new3">No CIO email. Platform notification only when 25% hit.</div></div>
+        <div class="field"><div class="field-label">Platform rewards</div>
+          <div class="inproduct-box">Impact dashboard access unlocks<br>"25% there" progress card<br>Strava impact stickers<br>Leaderboard position reveal</div>
         </div>
+        <div class="field"><div class="field-label">Why</div><div class="field-value new3">Keeps journey rich without email fatigue. Platform handles delivery.</div></div>
       </div>
     </div>
     <div class="stats-bar">
@@ -440,14 +479,12 @@
         <div class="field"><div class="field-label">Follow-up</div><div class="field-value unchanged">None</div></div>
       </div>
       <div class="panel panel-v3">
-        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision</div>
-        <div class="field"><div class="field-label">Subject</div><div class="field-value new3">Personalised with donor names</div></div>
-        <div class="field"><div class="field-label">Preheader</div><div class="field-value new3">Dynamic per racer</div></div>
-        <div class="field"><div class="field-label">From name</div><div class="field-value unchanged">Race for Impact</div></div>
-        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v3-cta">Gate + donor cards</div></div>
-        <div class="field"><div class="field-label">Follow-up</div>
-          <div class="followup-box"><div class="followup-label">If no action in X days</div>"Your donors are still waiting to hear from you." Gratitude action completion unlocks next track.</div>
+        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision <span class="v3-inproduct-tag">IN-PRODUCT</span></div>
+        <div class="field"><div class="field-label">In V3</div><div class="field-value new3">No CIO email. Platform notification only when 10 donors hit.</div></div>
+        <div class="field"><div class="field-label">Platform rewards</div>
+          <div class="inproduct-box">Thank Your Donors e-cards for all 10<br>Pre-written thank-you messages<br>Race Tracker share link<br>PUMA/Decathlon code + WhatsApp group + expert videos<br>Donor thank-you flow in-app</div>
         </div>
+        <div class="field"><div class="field-label">Why</div><div class="field-value new3">Keeps journey rich without email fatigue. Platform handles delivery.</div></div>
       </div>
     </div>
     <div class="stats-bar">
@@ -503,14 +540,18 @@
         <div class="field"><div class="field-label">Follow-up</div><div class="field-value unchanged">None</div></div>
       </div>
       <div class="panel panel-v3">
-        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision</div>
-        <div class="field"><div class="field-label">Subject</div><div class="field-value new3">Dynamic: $ gap + named impact</div></div>
-        <div class="field"><div class="field-label">Preheader</div><div class="field-value new3">Adapts to time-to-race</div></div>
-        <div class="field"><div class="field-label">From name</div><div class="field-value unchanged">Race for Impact</div></div>
-        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v3-cta">Gate + halfway card</div></div>
-        <div class="field"><div class="field-label">Follow-up</div>
-          <div class="followup-box"><div class="followup-label">If no action in X days</div>"You're still halfway. One message could get you to 75%." Urgency increases if race &lt;6 weeks.</div>
+        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision <span class="v3-gate-tag">GATE 3</span></div>
+        <div class="field"><div class="field-label">Gate</div><div class="field-value new3">Halfway Line — 50% of goal</div></div>
+        <div class="field"><div class="field-label">4-email sequence</div>
+          <div class="followup-box">
+            <div class="followup-label">Day 0: The How</div>"I'm at 60%. Here's what I did this week." Second ask approach. New tactic.<br><br>
+            <div class="followup-label">Day 2: The Carrot</div>Win PureSport nutrition year's supply + coaching session. Bigger gate = bigger prize.<br><br>
+            <div class="followup-label">Day 4: The Proof</div>"Your £X has already funded Y sessions." Leaderboard position. Most opened email.<br><br>
+            <div class="followup-label">Day 6: The Push</div>"X weeks to race. You're at Y%. Racers above you shared Z times." Time + competition.
+          </div>
         </div>
+        <div class="field"><div class="field-label">Reward email</div><div class="field-value new3">Halfway impact report + Get Ahead mental prep module + "Halfway" share card</div></div>
+        <div class="field"><div class="field-label">Exit</div><div class="field-value new3">Action completed → reward → Gate 4</div></div>
       </div>
     </div>
     <div class="stats-bar">
@@ -566,14 +607,12 @@
         <div class="field"><div class="field-label">Follow-up</div><div class="field-value unchanged">None</div></div>
       </div>
       <div class="panel panel-v3">
-        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision</div>
-        <div class="field"><div class="field-label">Subject</div><div class="field-value new3">Dynamic: $ gap + named outcome</div></div>
-        <div class="field"><div class="field-label">Preheader</div><div class="field-value new3">Urgency scales with time-to-race</div></div>
-        <div class="field"><div class="field-label">From name</div><div class="field-value unchanged">Race for Impact</div></div>
-        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v3-cta">Gate + "75% and counting" card</div></div>
-        <div class="field"><div class="field-label">Follow-up</div>
-          <div class="followup-box"><div class="followup-label">If no click in X days</div>"You're still $X away. One push." Urgency increases significantly if race &lt;2 weeks. Completion gates 100% track.</div>
+        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision <span class="v3-inproduct-tag">IN-PRODUCT</span></div>
+        <div class="field"><div class="field-label">In V3</div><div class="field-value new3">No CIO email. Platform notification only when 75% hit.</div></div>
+        <div class="field"><div class="field-label">Platform rewards</div>
+          <div class="inproduct-box">"75% and counting" card<br>PureSport full race day nutrition pack<br>Stretch goal impact preview<br>Countdown urgency in-app</div>
         </div>
+        <div class="field"><div class="field-label">Why</div><div class="field-value new3">Keeps journey rich without email fatigue. Platform handles delivery.</div></div>
       </div>
     </div>
     <div class="stats-bar">
@@ -632,14 +671,18 @@
         <div class="field"><div class="field-label">Follow-up</div><div class="field-value unchanged">None</div></div>
       </div>
       <div class="panel panel-v3">
-        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision</div>
-        <div class="field"><div class="field-label">Subject</div><div class="field-value new3">Celebration + dynamic next step</div></div>
-        <div class="field"><div class="field-label">Preheader</div><div class="field-value new3">Adapts if stretch goal already set</div></div>
-        <div class="field"><div class="field-label">From name</div><div class="field-value unchanged">Race for Impact</div></div>
-        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v3-cta">Goal Smashed share card</div></div>
-        <div class="field"><div class="field-label">Follow-up</div>
-          <div class="followup-box"><div class="followup-label">If no stretch goal set in X days</div>"You hit 100%. Now go further?" Core flow shifts to race-day prep track once stretch goal is set or race is &lt;1 week.</div>
+        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision <span class="v3-gate-tag">GATE 4</span></div>
+        <div class="field"><div class="field-label">Gate</div><div class="field-value new3">Finish Line — 100% of goal</div></div>
+        <div class="field"><div class="field-label">4-email sequence</div>
+          <div class="followup-box">
+            <div class="followup-label">Day 0: The How</div>"You're £X away. One more share closes it." Email your office toolkit. The gap is one post.<br><br>
+            <div class="followup-label">Day 2: The Carrot</div>Win free charity ticket for next season + HYROX World Champs experience pack. Biggest prize for biggest milestone.<br><br>
+            <div class="followup-label">Day 4: The Proof</div>"X racers smashed their goal this week." Full impact preview of what 100% funds.<br><br>
+            <div class="followup-label">Day 6: The Push</div>"Race day is in X days. Your goal is Y% done. This is your last week." Final countdown.
+          </div>
         </div>
+        <div class="field"><div class="field-label">Reward email</div><div class="field-value new3">Goal Smashed celebration + RFI T-shirt + full impact breakdown + all partner bundle + share card</div></div>
+        <div class="field"><div class="field-label">Exit</div><div class="field-value new3">100% hit → reward → Race Day + Wrapped sequence</div></div>
       </div>
     </div>
     <div class="stats-bar">
@@ -694,14 +737,12 @@
         <div class="field"><div class="field-label">Follow-up</div><div class="field-value unchanged">None</div></div>
       </div>
       <div class="panel panel-v3">
-        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision</div>
-        <div class="field"><div class="field-label">Subject</div><div class="field-value new3">Celebration + content trigger</div></div>
-        <div class="field"><div class="field-label">Preheader</div><div class="field-value new3">Dynamic impact summary</div></div>
-        <div class="field"><div class="field-label">From name</div><div class="field-value unchanged">Race for Impact</div></div>
-        <div class="field"><div class="field-label">CTA</div><div class="cta-pill v3-cta">K-factor share moment</div></div>
-        <div class="field"><div class="field-label">Follow-up</div>
-          <div class="followup-box"><div class="followup-label">No gate needed</div>150% is the top milestone. V3 routes racer into post-race content track and triggers Race Weekend Wrapped sequence.</div>
+        <div class="panel-label label-v3"><span class="dot"></span>V3 Vision <span class="v3-inproduct-tag">IN-PRODUCT</span></div>
+        <div class="field"><div class="field-label">In V3</div><div class="field-value new3">Stretch goal in-product reward. No dedicated CIO gate.</div></div>
+        <div class="field"><div class="field-label">Platform rewards</div>
+          <div class="inproduct-box">Specific outcome unlocks ("£X more = another session")<br>Escalating impact shareables<br>Recognition on leaderboard</div>
         </div>
+        <div class="field"><div class="field-label">Post-race</div><div class="field-value new3">Routes into Race Weekend Wrapped → Stay Connected → Recruit sequence.</div></div>
       </div>
     </div>
     <div class="stats-bar">
